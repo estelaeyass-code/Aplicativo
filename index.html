@@ -243,10 +243,107 @@
         </div>
     </footer>
 
+    <!-- Firebase Modular Integration Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, addDoc, getDocs, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Configurações do Firebase injetadas pelo ambiente
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'kicks-sneaker-store';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' 
+            ? JSON.parse(__firebase_config) 
+            : {
+                apiKey: "demo-api-key",
+                authDomain: "demo-project.firebaseapp.com",
+                projectId: "demo-project",
+                storageBucket: "demo-project.appspot.com",
+                messagingSenderId: "123456789",
+                appId: "1:123456789:web:abcdef"
+            };
+
+        // Inicialização das Instâncias
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+
+        // Autenticação Inicial obrigatória antes de realizar consultas
+        async function initAuth() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    const userCredential = await signInWithCustomToken(auth, __initial_auth_token);
+                    currentUser = userCredential.user;
+                } else {
+                    const userCredential = await signInAnonymously(auth);
+                    currentUser = userCredential.user;
+                }
+                console.log("Firebase Auth iniciado com sucesso:", currentUser.uid);
+                initDatabase();
+            } catch (error) {
+                console.error("Erro ao autenticar no Firebase:", error);
+            }
+        }
+
+        // Inicialização dos Dados e Sincronização Firestore
+        async function initDatabase() {
+            if (!currentUser) return;
+
+            // Coleção pública de Produtos (Caminho Estrito)
+            const productsCollection = collection(db, 'artifacts', appId, 'public', 'data', 'products');
+
+            // Escutar produtos em tempo real do Firestore
+            onSnapshot(productsCollection, (snapshot) => {
+                if (!snapshot.empty) {
+                    window.products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                } else {
+                    // Popula o Firestore com a lista inicial de tênis se estiver vazio
+                    initialProductsList.forEach(async (prod) => {
+                        const prodRef = doc(productsCollection, String(prod.id));
+                        await setDoc(prodRef, prod);
+                    });
+                    window.products = initialProductsList;
+                }
+
+                // Atualiza seleção de tamanhos padrão
+                window.products.forEach(p => {
+                    if (!window.selectedSizes[p.id]) {
+                        window.selectedSizes[p.id] = p.sizes ? p.sizes[0] : 39;
+                    }
+                });
+                
+                window.renderProducts();
+            }, (error) => {
+                console.error("Erro ao escutar coleção de produtos:", error);
+            });
+        }
+
+        // Salvar Pedido Concluído no Firestore
+        window.saveOrderToFirebase = async function(orderData) {
+            if (!currentUser) return;
+            try {
+                // Coleção privada de Pedidos por usuário (Caminho Estrito)
+                const ordersCollection = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'orders');
+                await addDoc(ordersCollection, {
+                    ...orderData,
+                    userId: currentUser.uid,
+                    createdAt: new Date().toISOString()
+                });
+                console.log("Pedido salvo com sucesso no Firestore!");
+            } catch (err) {
+                console.error("Erro ao salvar pedido no Firebase:", err);
+            }
+        };
+
+        // Inicia a Autenticação ao carregar
+        initAuth();
+    </script>
+
     <!-- Application Script -->
     <script>
-        // Ampliada Coleção de Tênis (14 Itens Diversificados)
-        const products = [
+        // Lista Base Inicial de Tênis
+        const initialProductsList = [
             {
                 id: 1,
                 name: "Nike Air Max Pulse",
@@ -376,10 +473,11 @@
         ];
 
         // Estado da Aplicação
+        window.products = initialProductsList;
         let cart = [];
         let selectedCategory = 'Todos';
         let searchQuery = '';
-        let selectedSizes = {};
+        window.selectedSizes = {};
 
         // Elementos DOM
         const productsGrid = document.getElementById('products-grid');
@@ -391,8 +489,8 @@
 
         // Inicialização
         window.addEventListener('DOMContentLoaded', () => {
-            products.forEach(p => selectedSizes[p.id] = p.sizes[0]);
-            renderProducts();
+            window.products.forEach(p => window.selectedSizes[p.id] = p.sizes ? p.sizes[0] : 39);
+            window.renderProducts();
             if (window.lucide) {
                 lucide.createIcons();
             }
@@ -404,8 +502,8 @@
         }
 
         // Renderização dos Produtos
-        function renderProducts() {
-            const filtered = products.filter(p => {
+        window.renderProducts = function() {
+            const filtered = window.products.filter(p => {
                 const matchesCategory = selectedCategory === 'Todos' || p.category === selectedCategory;
                 const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                                       p.category.toLowerCase().includes(searchQuery.toLowerCase());
@@ -450,9 +548,9 @@
                         <div>
                             <label class="text-xs text-neutral-400 mb-1.5 block">Tamanho (BR):</label>
                             <div class="flex flex-wrap gap-1.5">
-                                ${product.sizes.map(size => `
-                                    <button onclick="selectSize(${product.id}, ${size})" 
-                                            class="size-btn-${product.id} text-xs font-semibold px-2.5 py-1 rounded border ${selectedSizes[product.id] === size ? 'border-brand-red text-brand-red bg-brand-red/10' : 'border-neutral-800 text-neutral-400 hover:border-neutral-700'} transition">
+                                ${(product.sizes || [38, 39, 40, 41]).map(size => `
+                                    <button onclick="selectSize('${product.id}', ${size})" 
+                                            class="size-btn-${product.id} text-xs font-semibold px-2.5 py-1 rounded border ${window.selectedSizes[product.id] === size ? 'border-brand-red text-brand-red bg-brand-red/10' : 'border-neutral-800 text-neutral-400 hover:border-neutral-700'} transition">
                                         ${size}
                                     </button>
                                 `).join('')}
@@ -460,7 +558,7 @@
                         </div>
 
                         <!-- Botão Adicionar ao Carrinho -->
-                        <button onclick="addToCart(${product.id})" class="w-full bg-neutral-900 hover:bg-brand-red text-white border border-neutral-800 hover:border-brand-red font-semibold py-2.5 rounded-xl transition flex items-center justify-center space-x-2">
+                        <button onclick="addToCart('${product.id}')" class="w-full bg-neutral-900 hover:bg-brand-red text-white border border-neutral-800 hover:border-brand-red font-semibold py-2.5 rounded-xl transition flex items-center justify-center space-x-2">
                             <i data-lucide="plus" class="w-4 h-4"></i>
                             <span>Adicionar ao Carrinho</span>
                         </button>
@@ -471,12 +569,12 @@
             if (window.lucide) {
                 lucide.createIcons();
             }
-        }
+        };
 
         // Selecionar Tamanho
         function selectSize(productId, size) {
-            selectedSizes[productId] = size;
-            renderProducts();
+            window.selectedSizes[productId] = size;
+            window.renderProducts();
         }
 
         // Filtrar Categoria
@@ -491,18 +589,18 @@
                 }
             });
 
-            renderProducts();
+            window.renderProducts();
         }
 
         // Pesquisa
         function handleSearch() {
             searchQuery = document.getElementById('search-input').value;
-            renderProducts();
+            window.renderProducts();
         }
 
         function handleSearchMobile() {
             searchQuery = document.getElementById('search-input-mobile').value;
-            renderProducts();
+            window.renderProducts();
         }
 
         function toggleMobileSearch() {
@@ -517,10 +615,12 @@
 
         // Gestão do Carrinho
         function addToCart(productId) {
-            const product = products.find(p => p.id === productId);
-            const chosenSize = selectedSizes[productId];
+            const product = window.products.find(p => String(p.id) === String(productId));
+            if (!product) return;
+
+            const chosenSize = window.selectedSizes[productId] || (product.sizes ? product.sizes[0] : 39);
             
-            const existingIndex = cart.findIndex(item => item.id === productId && item.size === chosenSize);
+            const existingIndex = cart.findIndex(item => String(item.id) === String(productId) && item.size === chosenSize);
             
             if (existingIndex > -1) {
                 cart[existingIndex].quantity += 1;
@@ -626,7 +726,7 @@
         }
 
         // Finalizar Compra (Checkout)
-        function checkout() {
+        async function checkout() {
             if (cart.length === 0) {
                 showToast("Adicione itens ao carrinho antes de finalizar!");
                 return;
@@ -635,6 +735,16 @@
             // Gerar código aleatório para o pedido
             const randomCode = '#KC-' + Math.floor(10000 + Math.random() * 90000);
             document.getElementById('modal-order-id').innerText = randomCode;
+
+            // Salvar informações do pedido no Firebase
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            if (typeof window.saveOrderToFirebase === 'function') {
+                await window.saveOrderToFirebase({
+                    orderId: randomCode,
+                    items: cart,
+                    totalAmount: total
+                });
+            }
 
             // Esconder o carrinho e exibir modal de confirmação
             toggleCart(false);
