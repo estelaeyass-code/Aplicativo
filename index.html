@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KICKS // Premium Sneaker Store</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            red: '#FF3333',
+                            dark: '#0D0D0D',
+                            card: '#171717',
+                            gray: '#262626',
+                            muted: '#A3A3A3'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0d0d0d;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #262626;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #FF3333;
+        }
+        .glass-nav {
+            background: rgba(13, 13, 13, 0.85);
+            backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="bg-brand-dark text-white font-sans flex flex-col min-h-full">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-brand-red text-white px-5 py-3 rounded-lg shadow-xl flex items-center space-x-3 pointer-events-none">
+        <i data-lucide="check-circle" class="w-5 h-5"></i>
+        <span id="toast-msg" class="font-medium text-sm">Item added to cart!</span>
+    </div>
+
+    <!-- Header Navigation -->
+    <header class="sticky top-0 z-40 glass-nav border-b border-neutral-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+            
+            <!-- Logo -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="filterCategory('All')">
+                <div class="bg-brand-red p-2 rounded-lg transform -rotate-6">
+                    <i data-lucide="zap" class="w-6 h-6 text-white fill-current"></i>
+                </div>
+                <span class="font-display font-bold text-2xl tracking-wider">KICKS<span class="text-brand-red">.</span></span>
+            </div>
+
+            <!-- Search Bar (Desktop) -->
+            <div class="hidden md:flex flex-1 max-w-md mx-8 relative">
+                <input type="text" id="search-input" onkeyup="handleSearch()" placeholder="Search sneakers, brands..." 
+                       class="w-full bg-neutral-900 border border-neutral-800 rounded-full py-2.5 pl-10 pr-4 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-brand-red transition">
+                <i data-lucide="search" class="w-4 h-4 text-neutral-500 absolute left-3.5 top-3"></i>
+            </div>
+
+            <!-- Header Actions -->
+            <div class="flex items-center space-x-4">
+                <!-- Mobile Search Toggle Button -->
+                <button onclick="toggleMobileSearch()" class="md:hidden p-2 text-neutral-400 hover:text-white">
+                    <i data-lucide="search" class="w-6 h-6"></i>
+                </button>
+
+                <!-- Cart Button -->
+                <button onclick="toggleCart(true)" class="relative p-2.5 bg-neutral-900 border border-neutral-800 hover:border-neutral-700 rounded-full transition flex items-center justify-center">
+                    <i data-lucide="shopping-bag" class="w-5 h-5 text-white"></i>
+                    <span id="cart-badge" class="absolute -top-1 -right-1 bg-brand-red text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center opacity-0 transition-opacity">0</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Search Dropdown -->
+        <div id="mobile-search-bar" class="hidden md:hidden px-4 pb-4 border-b border-neutral-800">
+            <div class="relative">
+                <input type="text" id="search-input-mobile" onkeyup="handleSearchMobile()" placeholder="Search sneakers..." 
+                       class="w-full bg-neutral-900 border border-neutral-800 rounded-lg py-2 pl-10 pr-4 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-brand-red">
+                <i data-lucide="search" class="w-4 h-4 text-neutral-500 absolute left-3.5 top-3"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow">
+        
+        <!-- Hero Section -->
+        <section class="relative overflow-hidden bg-gradient-to-b from-neutral-900 to-brand-dark py-12 md:py-20 border-b border-neutral-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div class="space-y-6 text-center lg:text-left">
+                        <span class="inline-block bg-brand-red/10 border border-brand-red/20 text-brand-red text-xs uppercase font-bold tracking-widest px-3 py-1 rounded-full">New Drop 2026</span>
+                        <h1 class="font-display text-4xl sm:text-6xl font-extrabold tracking-tight leading-none uppercase">
+                            AIR HYPER <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-red to-orange-500">BOOST v2</span>
+                        </h1>
+                        <p class="text-neutral-400 max-w-lg mx-auto lg:mx-0 text-base sm:text-lg">
+                            Engineered for high performance and streetwear culture. Ultra-responsive cushioning designed to keep you moving forward.
+                        </p>
+                        <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
+                            <button onclick="scrollToProducts()" class="w-full sm:w-auto bg-brand-red hover:bg-red-600 text-white font-bold px-8 py-3.5 rounded-xl transition transform hover:scale-105 shadow-lg shadow-brand-red/25 flex items-center justify-center space-x-2">
+                                <span>Shop Now</span>
+                                <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                            </button>
+                            <div class="text-xl font-bold font-display text-neutral-300">$210.00</div>
+                        </div>
+                    </div>
+                    <div class="relative flex justify-center">
+                        <div class="absolute w-72 h-72 sm:w-96 sm:h-96 bg-brand-red/20 rounded-full blur-3xl -z-10"></div>
+                        <img src="https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=800&q=80" 
+                             alt="Featured Sneaker" 
+                             class="w-full max-w-lg h-auto object-cover rounded-2xl transform -rotate-12 hover:rotate-0 transition duration-500 shadow-2xl">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Catalog & Filters Section -->
+        <section id="products-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            
+            <!-- Category Filter Buttons -->
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+                <div>
+                    <h2 class="font-display text-2xl font-bold uppercase tracking-wide">Catalog</h2>
+                    <p class="text-neutral-400 text-sm">Discover the latest footwear trends</p>
+                </div>
+
+                <div class="flex items-center space-x-2 overflow-x-auto pb-2 w-full sm:w-auto">
+                    <button onclick="filterCategory('All')" class="cat-btn active bg-brand-red text-white px-4 py-2 rounded-lg text-sm font-semibold transition whitespace-nowrap">All</button>
+                    <button onclick="filterCategory('Running')" class="cat-btn bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 px-4 py-2 rounded-lg text-sm font-semibold transition whitespace-nowrap">Running</button>
+                    <button onclick="filterCategory('Casual')" class="cat-btn bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 px-4 py-2 rounded-lg text-sm font-semibold transition whitespace-nowrap">Casual</button>
+                    <button onclick="filterCategory('Basketball')" class="cat-btn bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 px-4 py-2 rounded-lg text-sm font-semibold transition whitespace-nowrap">Basketball</button>
+                    <button onclick="filterCategory('High Tops')" class="cat-btn bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 px-4 py-2 rounded-lg text-sm font-semibold transition whitespace-nowrap">High Tops</button>
+                </div>
+            </div>
+
+            <!-- Products Grid -->
+            <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Dynamic Products will be rendered here by JavaScript -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="hidden text-center py-16">
+                <i data-lucide="package-x" class="w-16 h-16 text-neutral-600 mx-auto mb-4"></i>
+                <h3 class="text-lg font-bold text-white mb-1">No Sneakers Found</h3>
+                <p class="text-neutral-500 text-sm">Try adjusting your search query or filter selection.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Shopping Cart Drawer Overlay -->
+    <div id="cart-overlay" onclick="toggleCart(false)" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
+    <!-- Shopping Cart Drawer -->
+    <div id="cart-drawer" class="fixed top-0 right-0 h-full w-full max-w-md bg-brand-card border-l border-neutral-800 z-50 transform translate-x-full transition-transform duration-300 flex flex-col">
+        <!-- Drawer Header -->
+        <div class="p-6 border-b border-neutral-800 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <i data-lucide="shopping-bag" class="w-5 h-5 text-brand-red"></i>
+                <h3 class="font-display font-bold text-lg uppercase tracking-wider">Your Cart</h3>
+            </div>
+            <button onclick="toggleCart(false)" class="p-2 text-neutral-400 hover:text-white rounded-lg hover:bg-neutral-800 transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <!-- Drawer Body (Items) -->
+        <div id="cart-items" class="flex-grow overflow-y-auto p-6 space-y-4">
+            <!-- Dynamic Cart Items rendered here -->
+        </div>
+
+        <!-- Drawer Footer (Checkout) -->
+        <div class="p-6 border-t border-neutral-800 bg-neutral-900/50 space-y-4">
+            <div class="space-y-2 text-sm">
+                <div class="flex justify-between text-neutral-400">
+                    <span>Subtotal</span>
+                    <span id="cart-subtotal" class="text-white font-medium">$0.00</span>
+                </div>
+                <div class="flex justify-between text-neutral-400">
+                    <span>Estimated Tax (8%)</span>
+                    <span id="cart-tax" class="text-white font-medium">$0.00</span>
+                </div>
+                <div class="flex justify-between text-base font-bold text-white pt-2 border-t border-neutral-800">
+                    <span>Total</span>
+                    <span id="cart-total" class="text-brand-red font-display text-lg">$0.00</span>
+                </div>
+            </div>
+
+            <button onclick="checkout()" class="w-full bg-brand-red hover:bg-red-600 text-white font-bold py-3.5 rounded-xl transition flex items-center justify-center space-x-2 shadow-lg shadow-brand-red/20">
+                <span>Proceed to Checkout</span>
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-neutral-950 border-t border-neutral-800 py-8">
+        <div class="max-w-7xl mx-auto px-4 text-center text-neutral-500 text-sm">
+            <p>&copy; 2026 KICKS Store Inc. All rights reserved. Premium Streetwear & Footwear.</p>
+        </div>
+    </footer>
+
+    <!-- Application Script -->
+    <script>
+        // Sneaker Products Data
+        const products = [
+            {
+                id: 1,
+                name: "Nike Air Max Pulse",
+                category: "Running",
+                price: 159.99,
+                rating: 4.8,
+                image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&q=80",
+                sizes: [8, 9, 10, 11]
+            },
+            {
+                id: 2,
+                name: "Adidas Forum Low Classic",
+                category: "Casual",
+                price: 110.00,
+                rating: 4.6,
+                image: "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?auto=format&fit=crop&w=600&q=80",
+                sizes: [7, 8, 9, 10, 11]
+            },
+            {
+                id: 3,
+                name: "Jordan Retro High OG",
+                category: "High Tops",
+                price: 180.00,
+                rating: 4.9,
+                image: "https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?auto=format&fit=crop&w=600&q=80",
+                sizes: [8, 9, 10, 12]
+            },
+            {
+                id: 4,
+                name: "Puma MB.02 Basketball",
+                category: "Basketball",
+                price: 135.00,
+                rating: 4.7,
+                image: "https://images.unsplash.com/photo-1608231387042-66d1773070a5?auto=format&fit=crop&w=600&q=80",
+                sizes: [9, 10, 11, 12]
+            },
+            {
+                id: 5,
+                name: "New Balance 550 Vintage",
+                category: "Casual",
+                price: 129.99,
+                rating: 4.5,
+                image: "https://images.unsplash.com/photo-1539185441755-769473a23570?auto=format&fit=crop&w=600&q=80",
+                sizes: [8, 9, 10, 11]
+            },
+            {
+                id: 6,
+                name: "Asics Gel-Kayano 29",
+                category: "Running",
+                price: 160.00,
+                rating: 4.8,
+                image: "https://images.unsplash.com/photo-1560769629-975ec94e6a86?auto=format&fit=crop&w=600&q=80",
+                sizes: [7, 8, 9, 10]
+            },
+            {
+                id: 7,
+                name: "Converse Chuck 70 High",
+                category: "High Tops",
+                price: 90.00,
+                rating: 4.4,
+                image: "https://images.unsplash.com/photo-1607522370275-f14206abe5d3?auto=format&fit=crop&w=600&q=80",
+                sizes: [8, 9, 10, 11, 12]
+            },
+            {
+                id: 8,
+                name: "Under Armour Curry Flow",
+                category: "Basketball",
+                price: 140.00,
+                rating: 4.7,
+                image: "https://images.unsplash.com/photo-1579338559194-a162d19bf842?auto=format&fit=crop&w=600&q=80",
+                sizes: [9, 10, 11]
+            }
+        ];
+
+        // Application State
+        let cart = [];
+        let selectedCategory = 'All';
+        let searchQuery = '';
+        let selectedSizes = {};
+
+        // DOM Elements
+        const productsGrid = document.getElementById('products-grid');
+        const emptyState = document.getElementById('empty-state');
+        const cartBadge = document.getElementById('cart-badge');
+        const cartItemsContainer = document.getElementById('cart-items');
+        const cartSubtotal = document.getElementById('cart-subtotal');
+        const cartTax = document.getElementById('cart-tax');
+        const cartTotal = document.getElementById('cart-total');
+
+        // Initialize App
+        window.addEventListener('DOMContentLoaded', () => {
+            // Set default sizes selection
+            products.forEach(p => selectedSizes[p.id] = p.sizes[0]);
+            renderProducts();
+            lucide.createIcons();
+        });
+
+        // Render Products Grid
+        function renderProducts() {
+            const filtered = products.filter(p => {
+                const matchesCategory = selectedCategory === 'All' || p.category === selectedCategory;
+                const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                      p.category.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchesCategory && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                productsGrid.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            productsGrid.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+
+            productsGrid.innerHTML = filtered.map(product => `
+                <div class="bg-brand-card border border-neutral-800 rounded-2xl overflow-hidden hover:border-neutral-700 transition duration-300 flex flex-col group">
+                    <!-- Image Box -->
+                    <div class="relative bg-neutral-900 overflow-hidden h-60 flex items-center justify-center p-4">
+                        <span class="absolute top-3 left-3 bg-neutral-800/80 backdrop-blur-md text-neutral-300 text-xs font-semibold px-2.5 py-1 rounded-md">
+                            ${product.category}
+                        </span>
+                        <img src="${product.image}" alt="${product.name}" 
+                             class="w-full h-full object-cover rounded-xl group-hover:scale-105 transition duration-500">
+                    </div>
+
+                    <!-- Details -->
+                    <div class="p-5 flex flex-col flex-grow justify-between space-y-4">
+                        <div>
+                            <div class="flex items-center justify-between text-xs text-neutral-400 mb-1">
+                                <div class="flex items-center text-amber-400">
+                                    <i data-lucide="star" class="w-3.5 h-3.5 fill-current mr-1"></i>
+                                    <span>${product.rating}</span>
+                                </div>
+                                <span>In Stock</span>
+                            </div>
+                            <h3 class="font-display font-bold text-lg text-white group-hover:text-brand-red transition">${product.name}</h3>
+                            <div class="text-xl font-bold font-display text-neutral-200 mt-1">$${product.price.toFixed(2)}</div>
+                        </div>
+
+                        <!-- Size Selector -->
+                        <div>
+                            <label class="text-xs text-neutral-400 mb-1.5 block">Select Size (US):</label>
+                            <div class="flex space-x-1.5">
+                                ${product.sizes.map(size => `
+                                    <button onclick="selectSize(${product.id}, ${size})" 
+                                            class="size-btn-${product.id} text-xs font-semibold px-2.5 py-1 rounded border ${selectedSizes[product.id] === size ? 'border-brand-red text-brand-red bg-brand-red/10' : 'border-neutral-800 text-neutral-400 hover:border-neutral-700'} transition">
+                                        ${size}
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <!-- Add to Cart Button -->
+                        <button onclick="addToCart(${product.id})" class="w-full bg-neutral-900 hover:bg-brand-red text-white border border-neutral-800 hover:border-brand-red font-semibold py-2.5 rounded-xl transition flex items-center justify-center space-x-2">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                            <span>Add To Cart</span>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            lucide.createIcons();
+        }
+
+        // Handle Size Selection
+        function selectSize(productId, size) {
+            selectedSizes[productId] = size;
+            renderProducts();
+        }
+
+        // Handle Category Filtering
+        function filterCategory(category) {
+            selectedCategory = category;
+            
+            // Update button UI
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                if (btn.innerText === category) {
+                    btn.className = "cat-btn active bg-brand-red text-white px-4 py-2 rounded-lg text-sm font-semibold transition whitespace-nowrap";
+                } else {
+                    btn.className = "cat-btn bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 px-4 py-2 rounded-lg text-sm font-semibold transition whitespace-nowrap";
+                }
+            });
+
+            renderProducts();
+        }
+
+        // Handle Search Inputs
+        function handleSearch() {
+            searchQuery = document.getElementById('search-input').value;
+            renderProducts();
+        }
+
+        function handleSearchMobile() {
+            searchQuery = document.getElementById('search-input-mobile').value;
+            renderProducts();
+        }
+
+        function toggleMobileSearch() {
+            const mobileBar = document.getElementById('mobile-search-bar');
+            mobileBar.classList.toggle('hidden');
+        }
+
+        // Scroll helper
+        function scrollToProducts() {
+            document.getElementById('products-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Shopping Cart Actions
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            const chosenSize = selectedSizes[productId];
+            
+            const existingIndex = cart.findIndex(item => item.id === productId && item.size === chosenSize);
+            
+            if (existingIndex > -1) {
+                cart[existingIndex].quantity += 1;
+            } else {
+                cart.push({
+                    ...product,
+                    size: chosenSize,
+                    quantity: 1
+                });
+            }
+
+            updateCartUI();
+            showToast(`Added ${product.name} (Size ${chosenSize}) to cart!`);
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        function changeQuantity(index, delta) {
+            cart[index].quantity += delta;
+            if (cart[index].quantity <= 0) {
+                cart.splice(index, 1);
+            }
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            // Update Badge Count
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartBadge.innerText = totalItems;
+            if (totalItems > 0) {
+                cartBadge.classList.remove('opacity-0');
+            } else {
+                cartBadge.classList.add('opacity-0');
+            }
+
+            // Render Items
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = `
+                    <div class="text-center py-12 text-neutral-500 space-y-3">
+                        <i data-lucide="shopping-bag" class="w-12 h-12 mx-auto stroke-1"></i>
+                        <p class="text-sm">Your cart is currently empty.</p>
+                    </div>
+                `;
+            } else {
+                cartItemsContainer.innerHTML = cart.map((item, index) => `
+                    <div class="flex items-center space-x-4 bg-neutral-900 p-3 rounded-xl border border-neutral-800">
+                        <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded-lg">
+                        <div class="flex-grow">
+                            <h4 class="font-bold text-sm text-white line-clamp-1">${item.name}</h4>
+                            <div class="text-xs text-neutral-400 mt-0.5">Size: US ${item.size}</div>
+                            <div class="text-sm font-bold text-brand-red mt-1">$${(item.price * item.quantity).toFixed(2)}</div>
+                        </div>
+                        <div class="flex flex-col items-end space-y-2">
+                            <button onclick="removeFromCart(${index})" class="text-neutral-500 hover:text-red-400 transition">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                            <div class="flex items-center space-x-2 bg-neutral-800 rounded-lg px-2 py-1">
+                                <button onclick="changeQuantity(${index}, -1)" class="text-neutral-400 hover:text-white">-</button>
+                                <span class="text-xs font-bold w-4 text-center">${item.quantity}</span>
+                                <button onclick="changeQuantity(${index}, 1)" class="text-neutral-400 hover:text-white">+</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Calculate Totals
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const tax = subtotal * 0.08;
+            const total = subtotal + tax;
+
+            cartSubtotal.innerText = `$${subtotal.toFixed(2)}`;
+            cartTax.innerText = `$${tax.toFixed(2)}`;
+            cartTotal.innerText = `$${total.toFixed(2)}`;
+
+            lucide.createIcons();
+        }
+
+        // Toggle Drawer
+        function toggleCart(open) {
+            const drawer = document.getElementById('cart-drawer');
+            const overlay = document.getElementById('cart-overlay');
+            
+            if (open) {
+                overlay.classList.remove('opacity-0', 'pointer-events-none');
+                drawer.classList.remove('translate-x-full');
+            } else {
+                overlay.classList.add('opacity-0', 'pointer-events-none');
+                drawer.classList.add('translate-x-full');
+            }
+        }
+
+        // Show Toast Notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-msg');
+            toastMsg.innerText = message;
+            
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2500);
+        }
+
+        // Mock Checkout
+        function checkout() {
+            if (cart.length === 0) {
+                showToast("Add items to your cart before checking out!");
+                return;
+            }
+            alert("Thank you for your order! This is a demo store.");
+            cart = [];
+            updateCartUI();
+            toggleCart(false);
+        }
+    </script>
+</body>
+</html>
