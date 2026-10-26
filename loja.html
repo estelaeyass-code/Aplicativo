@@ -1,8 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full">
+<html lang="pt-BR">
 <head>
-
-</a>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KICKS // Loja de Sneakers Premium</title>
@@ -10,767 +8,298 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        display: ['Space Grotesk', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: {
-                            red: '#FF3333',
-                            dark: '#0D0D0D',
-                            card: '#171717',
-                            gray: '#262626',
-                            muted: '#A3A3A3'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
     <style>
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0d0d0d;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #262626;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #FF3333;
-        }
-        .glass-nav {
-            background: rgba(13, 13, 13, 0.85);
-            backdrop-filter: blur(12px);
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
     </style>
 </head>
-<body class="bg-brand-dark text-white font-sans flex flex-col min-h-full">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-orange-500 selection:text-white">
 
-    <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-brand-red text-white px-5 py-3 rounded-lg shadow-xl flex items-center space-x-3 pointer-events-none">
-        <i data-lucide="check-circle" class="w-5 h-5"></i>
-        <span id="toast-msg" class="font-medium text-sm">Item adicionado ao carrinho!</span>
-    </div>
-
-    <!-- Header Navigation -->
-    <header class="sticky top-0 z-40 glass-nav border-b border-neutral-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
-            
-            <!-- Logo -->
-            <div class="flex items-center space-x-3 cursor-pointer" onclick="filterCategory('Todos')">
-                <div class="bg-brand-red p-2 rounded-lg transform -rotate-6">
-                    <i data-lucide="zap" class="w-6 h-6 text-white fill-current"></i>
+    <!-- Cabeçalho / Navegação -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
+            <a href="loja.html" class="flex items-center gap-2 group">
+                <div class="bg-gradient-to-tr from-orange-600 to-amber-500 p-2 rounded-xl group-hover:scale-105 transition duration-300 shadow-lg shadow-orange-500/20">
+                    <i data-lucide="footprints" class="w-6 h-6 text-white"></i>
                 </div>
-                <span class="font-display font-bold text-2xl tracking-wider">KICKS<span class="text-brand-red">.</span></span>
+                <span class="text-xl font-extrabold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-slate-400">KICKS</span>
+            </a>
+
+            <!-- Campo de Busca -->
+            <div class="flex-1 max-w-md hidden md:block">
+                <div class="relative">
+                    <i data-lucide="search" class="w-4 h-4 text-slate-500 absolute left-3.5 top-3"></i>
+                    <input type="text" id="search-input" onkeyup="filterProducts()" placeholder="Buscar tênis por nome ou marca..." class="w-full bg-slate-950 border border-slate-800 rounded-full pl-10 pr-4 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-orange-500 transition">
+                </div>
             </div>
 
-            <!-- Search Bar (Desktop) -->
-            <div class="hidden md:flex flex-1 max-w-md mx-8 relative">
-                <input type="text" id="search-input" onkeyup="handleSearch()" placeholder="Buscar tênis, marcas, estilos..." 
-                       class="w-full bg-neutral-900 border border-neutral-800 rounded-full py-2.5 pl-10 pr-4 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-brand-red transition">
-                <i data-lucide="search" class="w-4 h-4 text-neutral-500 absolute left-3.5 top-3"></i>
-            </div>
+            <div class="flex items-center gap-3">
+                <!-- Perfil -->
+                <a href="profile.html" class="flex items-center gap-2 text-slate-300 hover:text-white font-medium text-sm border border-slate-800 bg-slate-900 px-3 py-1.5 rounded-xl hover:border-slate-700 transition">
+                    <i data-lucide="user" class="w-4 h-4 text-orange-500"></i>
+                    <span id="user-display-name">Meu Perfil</span>
+                </a>
 
-            <!-- Header Actions -->
-            <div class="flex items-center space-x-4">
-                <!-- Mobile Search Toggle Button -->
-                <button onclick="toggleMobileSearch()" class="md:hidden p-2 text-neutral-400 hover:text-white">
-                    <i data-lucide="search" class="w-6 h-6"></i>
+                <!-- Carrinho -->
+                <button onclick="toggleCart()" class="relative bg-orange-600 hover:bg-orange-500 text-white px-4 py-2 rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg shadow-orange-600/20 transition active:scale-95">
+                    <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline">Carrinho</span>
+                    <span id="cart-count" class="bg-white text-orange-600 text-xs font-black rounded-full px-2 py-0.5 min-w-[20px] text-center">0</span>
                 </button>
-
-                <!-- Cart Button -->
-                <button onclick="toggleCart(true)" class="relative p-2.5 bg-neutral-900 border border-neutral-800 hover:border-neutral-700 rounded-full transition flex items-center justify-center">
-                    <i data-lucide="shopping-bag" class="w-5 h-5 text-white"></i>
-                    <span id="cart-badge" class="absolute -top-1 -right-1 bg-brand-red text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center opacity-0 transition-opacity">0</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- Mobile Search Dropdown -->
-        <div id="mobile-search-bar" class="hidden md:hidden px-4 pb-4 border-b border-neutral-800">
-            <div class="relative">
-                <input type="text" id="search-input-mobile" onkeyup="handleSearchMobile()" placeholder="Buscar tênis..." 
-                       class="w-full bg-neutral-900 border border-neutral-800 rounded-lg py-2 pl-10 pr-4 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-brand-red">
-                <i data-lucide="search" class="w-4 h-4 text-neutral-500 absolute left-3.5 top-3"></i>
             </div>
         </div>
     </header>
 
-    <!-- Main Content Area -->
-    <main class="flex-grow">
-        
-        <!-- Hero Section -->
-        <section class="relative overflow-hidden bg-gradient-to-b from-neutral-900 to-brand-dark py-12 md:py-20 border-b border-neutral-800">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-                    <div class="space-y-6 text-center lg:text-left">
-                        <span class="inline-block bg-brand-red/10 border border-brand-red/20 text-brand-red text-xs uppercase font-bold tracking-widest px-3 py-1 rounded-full">Lançamento Exclusivo 2026</span>
-                        <h1 class="font-display text-4xl sm:text-6xl font-extrabold tracking-tight leading-none uppercase">
-                            AIR HYPER <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-red to-orange-500">BOOST v2</span>
-                        </h1>
-                        <p class="text-neutral-400 max-w-lg mx-auto lg:mx-0 text-base sm:text-lg">
-                            Desenvolvido para alta performance e a cultura streetwear. Amortecimento ultra-responsivo projetado para impulsionar cada passo.
-                        </p>
-                        <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
-                            <button onclick="scrollToProducts()" class="w-full sm:w-auto bg-brand-red hover:bg-red-600 text-white font-bold px-8 py-3.5 rounded-xl transition transform hover:scale-105 shadow-lg shadow-brand-red/25 flex items-center justify-center space-x-2">
-                                <span>Comprar Agora</span>
-                                <i data-lucide="arrow-right" class="w-5 h-5"></i>
-                            </button>
-                            <div class="text-xl font-bold font-display text-neutral-300">R$ 1.199,90</div>
-                        </div>
-                    </div>
-                    <div class="relative flex justify-center">
-                        <div class="absolute w-72 h-72 sm:w-96 sm:h-96 bg-brand-red/20 rounded-full blur-3xl -z-10"></div>
-                        <img src="https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=800&q=80" 
-                             alt="Featured Sneaker" 
-                             class="w-full max-w-lg h-auto object-cover rounded-2xl transform -rotate-12 hover:rotate-0 transition duration-500 shadow-2xl">
-                    </div>
-                </div>
+    <!-- Banner Hero -->
+    <section class="max-w-7xl mx-auto px-4 pt-8 w-full">
+        <div class="bg-gradient-to-r from-orange-600 to-amber-600 rounded-3xl p-8 md:p-12 relative overflow-hidden shadow-2xl">
+            <div class="relative z-10 max-w-xl">
+                <span class="bg-black/30 backdrop-blur-md text-white text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-4 inline-block">Coleção Exclusiva 2026</span>
+                <h1 class="text-3xl md:text-5xl font-extrabold text-white leading-tight mb-4">Eleve o seu estilo com os Sneakers mais desejados.</h1>
+                <p class="text-orange-100 text-sm md:text-base mb-6">Originalidade garantida, edições limitadas e entrega rápida para todo o país.</p>
             </div>
-        </section>
+            <i data-lucide="footprints" class="w-96 h-96 text-white/10 absolute -right-10 -bottom-20 pointer-events-none rotate-12"></i>
+        </div>
+    </section>
 
-        <!-- Catalog & Filters Section -->
-        <section id="products-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            
-            <!-- Category Filter Buttons -->
-            <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
-                <div>
-                    <h2 class="font-display text-2xl font-bold uppercase tracking-wide">Catálogo de Sneakers</h2>
-                    <p class="text-neutral-400 text-sm">Descubra os modelos mais cobiçados do mundo</p>
-                </div>
+    <!-- Categorias / Filtros -->
+    <section class="max-w-7xl mx-auto px-4 py-6 w-full">
+        <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none" id="categories-container">
+            <button onclick="filterCategory('all')" class="cat-btn active bg-orange-600 text-white text-xs font-bold px-4 py-2 rounded-full whitespace-nowrap transition">Todos os Tênis</button>
+            <button onclick="filterCategory('Nike')" class="cat-btn bg-slate-900 border border-slate-800 text-slate-400 hover:text-white text-xs font-bold px-4 py-2 rounded-full whitespace-nowrap transition">Nike</button>
+            <button onclick="filterCategory('Adidas')" class="cat-btn bg-slate-900 border border-slate-800 text-slate-400 hover:text-white text-xs font-bold px-4 py-2 rounded-full whitespace-nowrap transition">Adidas</button>
+            <button onclick="filterCategory('Jordan')" class="cat-btn bg-slate-900 border border-slate-800 text-slate-400 hover:text-white text-xs font-bold px-4 py-2 rounded-full whitespace-nowrap transition">Jordan</button>
+            <button onclick="filterCategory('New Balance')" class="cat-btn bg-slate-900 border border-slate-800 text-slate-400 hover:text-white text-xs font-bold px-4 py-2 rounded-full whitespace-nowrap transition">New Balance</button>
+        </div>
+    </section>
 
-                <div class="flex items-center space-x-2 overflow-x-auto pb-2 w-full sm:w-auto">
-                    <button onclick="filterCategory('Todos')" class="cat-btn active bg-brand-red text-white px-4 py-2 rounded-lg text-sm font-semibold transition whitespace-nowrap">Todos</button>
-                    <button onclick="filterCategory('Basquete')" class="cat-btn bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 px-4 py-2 rounded-lg text-sm font-semibold transition whitespace-nowrap">Basquete</button>
-                    <button onclick="filterCategory('Corrida')" class="cat-btn bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 px-4 py-2 rounded-lg text-sm font-semibold transition whitespace-nowrap">Corrida</button>
-                    <button onclick="filterCategory('Casual')" class="cat-btn bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 px-4 py-2 rounded-lg text-sm font-semibold transition whitespace-nowrap">Casual</button>
-                    <button onclick="filterCategory('Edição Limitada')" class="cat-btn bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 px-4 py-2 rounded-lg text-sm font-semibold transition whitespace-nowrap">Edição Limitada</button>
-                </div>
-            </div>
-
-            <!-- Products Grid -->
-            <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                <!-- Dynamic Products will be rendered here by JavaScript -->
-            </div>
-
-            <!-- Empty State -->
-            <div id="empty-state" class="hidden text-center py-16">
-                <i data-lucide="package-x" class="w-16 h-16 text-neutral-600 mx-auto mb-4"></i>
-                <h3 class="text-lg font-bold text-white mb-1">Nenhum Tênis Encontrado</h3>
-                <p class="text-neutral-500 text-sm">Tente ajustar a sua busca ou selecione outra categoria.</p>
-            </div>
-        </section>
-
+    <!-- Grelha de Produtos -->
+    <main class="max-w-7xl mx-auto px-4 py-4 flex-1 w-full">
+        <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <!-- Os ténis vão aparecer aqui dinamicamente -->
+        </div>
     </main>
 
-    <!-- Shopping Cart Drawer Overlay -->
-    <div id="cart-overlay" onclick="toggleCart(false)" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 opacity-0 pointer-events-none transition-opacity duration-300"></div>
-
-    <!-- Shopping Cart Drawer -->
-    <div id="cart-drawer" class="fixed top-0 right-0 h-full w-full max-w-md bg-brand-card border-l border-neutral-800 z-50 transform translate-x-full transition-transform duration-300 flex flex-col">
-        <!-- Drawer Header -->
-        <div class="p-6 border-b border-neutral-800 flex items-center justify-between">
-            <div class="flex items-center space-x-2">
-                <i data-lucide="shopping-bag" class="w-5 h-5 text-brand-red"></i>
-                <h3 class="font-display font-bold text-lg uppercase tracking-wider">Seu Carrinho</h3>
+    <!-- Sidebar do Carrinho -->
+    <div id="cart-sidebar" class="fixed inset-y-0 right-0 w-full max-w-md bg-slate-900 border-l border-slate-800 z-50 transform translate-x-full transition-transform duration-300 shadow-2xl flex flex-col justify-between">
+        <div class="p-6 border-b border-slate-800 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <i data-lucide="shopping-bag" class="w-5 h-5 text-orange-500"></i>
+                <h2 class="text-lg font-bold">Seu Carrinho</h2>
             </div>
-            <button onclick="toggleCart(false)" class="p-2 text-neutral-400 hover:text-white rounded-lg hover:bg-neutral-800 transition">
-                <i data-lucide="x" class="w-5 h-5"></i>
+            <button onclick="toggleCart()" class="text-slate-400 hover:text-white transition">
+                <i data-lucide="x" class="w-6 h-6"></i>
             </button>
         </div>
 
-        <!-- Drawer Body (Items) -->
-        <div id="cart-items" class="flex-grow overflow-y-auto p-6 space-y-4">
-            <!-- Dynamic Cart Items rendered here -->
+        <div id="cart-items" class="flex-1 overflow-y-auto p-6 space-y-4">
+            <!-- Itens do carrinho -->
         </div>
 
-        <!-- Drawer Footer (Checkout) -->
-        <div class="p-6 border-t border-neutral-800 bg-neutral-900/50 space-y-4">
-            <div class="space-y-2 text-sm">
-                <div class="flex justify-between text-neutral-400">
-                    <span>Subtotal</span>
-                    <span id="cart-subtotal" class="text-white font-medium">R$ 0,00</span>
-                </div>
-                <div class="flex justify-between text-neutral-400">
-                    <span>Frete</span>
-                    <span class="text-emerald-400 font-medium">Grátis</span>
-                </div>
-                <div class="flex justify-between text-base font-bold text-white pt-2 border-t border-neutral-800">
-                    <span>Total</span>
-                    <span id="cart-total" class="text-brand-red font-display text-lg">R$ 0,00</span>
-                </div>
+        <div class="p-6 border-t border-slate-800 bg-slate-950/50">
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-slate-400 text-sm font-medium">Subtotal</span>
+                <span id="cart-total" class="text-xl font-extrabold text-white">R$ 0,00</span>
             </div>
-
-            <button onclick="checkout()" class="w-full bg-brand-red hover:bg-red-600 text-white font-bold py-3.5 rounded-xl transition flex items-center justify-center space-x-2 shadow-lg shadow-brand-red/20">
-                <span>Finalizar Compra</span>
-                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            <button onclick="checkout()" class="w-full bg-orange-600 hover:bg-orange-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-orange-600/20 active:scale-95 flex items-center justify-center gap-2">
+                <i data-lucide="check-circle" class="w-5 h-5"></i> Finalizar Compra
             </button>
         </div>
     </div>
+    <div id="cart-overlay" onclick="toggleCart()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden"></div>
 
-    <!-- Modal de Sucesso na Compra -->
-    <div id="checkout-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
-        <div class="bg-neutral-900 border border-neutral-800 rounded-2xl max-w-md w-full p-8 text-center space-y-4 shadow-2xl transform scale-95 transition-transform duration-300" id="checkout-modal-card">
-            <div class="w-16 h-16 bg-emerald-500/10 text-emerald-500 rounded-full flex items-center justify-center mx-auto border border-emerald-500/20">
-                <i data-lucide="check-circle-2" class="w-10 h-10"></i>
-            </div>
-            <h3 class="font-display text-2xl font-bold text-white uppercase">Pedido Confirmado!</h3>
-            <p class="text-neutral-400 text-sm leading-relaxed">
-                Obrigado por comprar na KICKS. Enviamos os detalhes do pedido e o código de rastreamento para o seu e-mail.
-            </p>
-            <div class="bg-neutral-950 border border-neutral-800 rounded-xl p-4 text-left space-y-2 text-xs text-neutral-400">
-                <div class="flex justify-between"><span>Código do Pedido:</span> <strong class="text-white font-mono" id="modal-order-id">#KC-94820</strong></div>
-                <div class="flex justify-between"><span>Pagamento:</span> <strong class="text-white">PIX / Cartão de Crédito</strong></div>
-                <div class="flex justify-between"><span>Prazo Estimado:</span> <strong class="text-white">3 a 5 dias úteis</strong></div>
-            </div>
-            <button onclick="closeCheckoutModal()" class="w-full bg-brand-red hover:bg-red-600 text-white font-bold py-3 rounded-xl transition">
-                Continuar Comprando
-            </button>
-        </div>
-    </div>
-
-    <!-- Footer -->
-    <footer class="bg-neutral-950 border-t border-neutral-800 py-8">
-        <div class="max-w-7xl mx-auto px-4 text-center text-neutral-500 text-sm">
-            <p>&copy; 2026 KICKS Brasil Inc. Todos os direitos reservados. Sneakers & Streetwear Original.</p>
-        </div>
+    <!-- Rodapé -->
+    <footer class="border-t border-slate-900 py-6 text-center text-xs text-slate-600 mt-12">
+        &copy; 2026 KICKS Store. Todos os direitos reservados.
     </footer>
 
-    <!-- Firebase Modular Integration Script -->
+    <!-- Firebase e Lógica da Loja -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, addDoc, getDocs, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Configurações do Firebase injetadas pelo ambiente
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'kicks-sneaker-store';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' 
-            ? JSON.parse(__firebase_config) 
-            : {
-                apiKey: "demo-api-key",
-                authDomain: "demo-project.firebaseapp.com",
-                projectId: "demo-project",
-                storageBucket: "demo-project.appspot.com",
-                messagingSenderId: "123456789",
-                appId: "1:123456789:web:abcdef"
-            };
+        const firebaseConfig = {
+            apiKey: "AIzaSyDoipkVYlNOArClFhhKyQI02QCYLP4rtWM",
+            authDomain: "kicks-642ac.firebaseapp.com",
+            projectId: "kicks-642ac",
+            storageBucket: "kicks-642ac.firebasestorage.app",
+            messagingSenderId: "48841933752",
+            appId: "1:48841933752:web:457adf9228738b9901054d"
+        };
 
-        // Inicialização das Instâncias
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
         let currentUser = null;
 
-        // Autenticação Inicial obrigatória antes de realizar consultas
-        async function initAuth() {
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    const userCredential = await signInWithCustomToken(auth, __initial_auth_token);
-                    currentUser = userCredential.user;
-                } else {
-                    const userCredential = await signInAnonymously(auth);
-                    currentUser = userCredential.user;
-                }
-                console.log("Firebase Auth iniciado com sucesso:", currentUser.uid);
-                initDatabase();
-            } catch (error) {
-                console.error("Erro ao autenticar no Firebase:", error);
-            }
-        }
-
-        // Inicialização dos Dados e Sincronização Firestore
-        async function initDatabase() {
-            if (!currentUser) return;
-
-            // Coleção pública de Produtos (Caminho Estrito)
-            const productsCollection = collection(db, 'artifacts', appId, 'public', 'data', 'products');
-
-            // Escutar produtos em tempo real do Firestore
-            onSnapshot(productsCollection, (snapshot) => {
-                if (!snapshot.empty) {
-                    window.products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                } else {
-                    // Popula o Firestore com a lista inicial de tênis se estiver vazio
-                    initialProductsList.forEach(async (prod) => {
-                        const prodRef = doc(productsCollection, String(prod.id));
-                        await setDoc(prodRef, prod);
-                    });
-                    window.products = initialProductsList;
-                }
-
-                // Atualiza seleção de tamanhos padrão
-                window.products.forEach(p => {
-                    if (!window.selectedSizes[p.id]) {
-                        window.selectedSizes[p.id] = p.sizes ? p.sizes[0] : 39;
-                    }
-                });
-                
-                window.renderProducts();
-            }, (error) => {
-                console.error("Erro ao escutar coleção de produtos:", error);
-            });
-        }
-
-        // Salvar Pedido Concluído no Firestore
-        window.saveOrderToFirebase = async function(orderData) {
-            if (!currentUser) return;
-            try {
-                // Coleção privada de Pedidos por usuário (Caminho Estrito)
-                const ordersCollection = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'orders');
-                await addDoc(ordersCollection, {
-                    ...orderData,
-                    userId: currentUser.uid,
-                    createdAt: new Date().toISOString()
-                });
-                console.log("Pedido salvo com sucesso no Firestore!");
-            } catch (err) {
-                console.error("Erro ao salvar pedido no Firebase:", err);
-            }
-        };
-
-        // Inicia a Autenticação ao carregar
-        initAuth();
-    </script>
-
-    <!-- Application Script -->
-    <script>
-        // Lista Base Inicial de Tênis
-        const initialProductsList = [
-            {
-                id: 1,
-                name: "Nike Air Max Pulse",
-                category: "Corrida",
-                price: 899.90,
-                rating: 4.8,
-                image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&q=80",
-                sizes: [38, 39, 40, 41, 42]
-            },
-            {
-                id: 2,
-                name: "Adidas Forum Low Classic",
-                category: "Casual",
-                price: 649.90,
-                rating: 4.6,
-                image: "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?auto=format&fit=crop&w=600&q=80",
-                sizes: [37, 38, 39, 40, 41, 42]
-            },
-            {
-                id: 3,
-                name: "Air Jordan 1 High OG Chicago",
-                category: "Edição Limitada",
-                price: 1599.90,
-                rating: 4.9,
-                image: "https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?auto=format&fit=crop&w=600&q=80",
-                sizes: [39, 40, 41, 42, 43, 44]
-            },
-            {
-                id: 4,
-                name: "Puma MB.02 Basketball",
-                category: "Basquete",
-                price: 799.90,
-                rating: 4.7,
-                image: "https://images.unsplash.com/photo-1608231387042-66d1773070a5?auto=format&fit=crop&w=600&q=80",
-                sizes: [39, 40, 41, 42, 43]
-            },
-            {
-                id: 5,
-                name: "New Balance 550 Vintage White",
-                category: "Casual",
-                price: 749.90,
-                rating: 4.7,
-                image: "https://images.unsplash.com/photo-1539185441755-769473a23570?auto=format&fit=crop&w=600&q=80",
-                sizes: [38, 39, 40, 41, 42]
-            },
-            {
-                id: 6,
-                name: "Asics Gel-Kayano 29",
-                category: "Corrida",
-                price: 999.90,
-                rating: 4.8,
-                image: "https://images.unsplash.com/photo-1560769629-975ec94e6a86?auto=format&fit=crop&w=600&q=80",
-                sizes: [37, 38, 39, 40, 41]
-            },
-            {
-                id: 7,
-                name: "Converse Chuck 70 Vintage High",
-                category: "Casual",
-                price: 449.90,
-                rating: 4.5,
-                image: "https://images.unsplash.com/photo-1607522370275-f14206abe5d3?auto=format&fit=crop&w=600&q=80",
-                sizes: [37, 38, 39, 40, 41, 42, 43]
-            },
-            {
-                id: 8,
-                name: "Yeezy Boost 350 v2 Zebra",
-                category: "Edição Limitada",
-                price: 1899.90,
-                rating: 4.9,
-                image: "https://images.unsplash.com/photo-1584539696499-bff0b4768e4e?auto=format&fit=crop&w=600&q=80",
-                sizes: [39, 40, 41, 42, 43]
-            },
-            {
-                id: 9,
-                name: "Nike Dunk Low Retro Panda",
-                category: "Casual",
-                price: 849.90,
-                rating: 4.8,
-                image: "https://images.unsplash.com/photo-1597045566677-8cf032ed6634?auto=format&fit=crop&w=600&q=80",
-                sizes: [38, 39, 40, 41, 42, 43]
-            },
-            {
-                id: 10,
-                name: "Salomon XT-6 Gore-Tex",
-                category: "Edição Limitada",
-                price: 1399.90,
-                rating: 4.8,
-                image: "https://images.unsplash.com/photo-1579338559194-a162d19bf842?auto=format&fit=crop&w=600&q=80",
-                sizes: [39, 40, 41, 42, 43]
-            },
-            {
-                id: 11,
-                name: "Adidas Samba OG Core Black",
-                category: "Casual",
-                price: 699.90,
-                rating: 4.6,
-                image: "https://images.unsplash.com/photo-1518002171953-a080ee817e1f?auto=format&fit=crop&w=600&q=80",
-                sizes: [37, 38, 39, 40, 41, 42]
-            },
-            {
-                id: 12,
-                name: "Under Armour Curry Flow 10",
-                category: "Basquete",
-                price: 899.90,
-                rating: 4.7,
-                image: "https://images.unsplash.com/photo-1575537302964-96cd47c06b1b?auto=format&fit=crop&w=600&q=80",
-                sizes: [40, 41, 42, 43, 44]
-            },
-            {
-                id: 13,
-                name: "Nike Air Max 90 Infrared",
-                category: "Casual",
-                price: 799.90,
-                rating: 4.9,
-                image: "https://images.unsplash.com/photo-1605348532760-6753d2c43329?auto=format&fit=crop&w=600&q=80",
-                sizes: [38, 39, 40, 41, 42, 43]
-            },
-            {
-                id: 14,
-                name: "Hoka One One Clifton 9",
-                category: "Corrida",
-                price: 1099.90,
-                rating: 4.8,
-                image: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&w=600&q=80",
-                sizes: [38, 39, 40, 41, 42]
-            }
-        ];
-
-        // Estado da Aplicação
-        window.products = initialProductsList;
-        let cart = [];
-        let selectedCategory = 'Todos';
-        let searchQuery = '';
-        window.selectedSizes = {};
-
-        // Elementos DOM
-        const productsGrid = document.getElementById('products-grid');
-        const emptyState = document.getElementById('empty-state');
-        const cartBadge = document.getElementById('cart-badge');
-        const cartItemsContainer = document.getElementById('cart-items');
-        const cartSubtotal = document.getElementById('cart-subtotal');
-        const cartTotal = document.getElementById('cart-total');
-
-        // Inicialização
-        window.addEventListener('DOMContentLoaded', () => {
-            window.products.forEach(p => window.selectedSizes[p.id] = p.sizes ? p.sizes[0] : 39);
-            window.renderProducts();
-            if (window.lucide) {
-                lucide.createIcons();
+        // Proteção de Rota: Se não estiver logado, envia para o index.html (Login)
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = "index.html";
+            } else {
+                currentUser = user;
+                document.getElementById('user-display-name').innerText = user.displayName || user.email.split('@')[0];
             }
         });
 
-        // Formatação de Moeda BRL (R$)
-        function formatMoney(amount) {
-            return amount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        }
+        // Lista de Ténis da Loja
+        const products = [
+            { id: 1, name: "Air Jordan 1 High OG", brand: "Jordan", price: 1499.90, image: "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?w=600&auto=format&fit=crop" },
+            { id: 2, name: "Nike Dunk Low Retro", brand: "Nike", price: 899.90, image: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=600&auto=format&fit=crop" },
+            { id: 3, name: "Adidas Yeezy Boost 350", brand: "Adidas", price: 1799.90, image: "https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=600&auto=format&fit=crop" },
+            { id: 4, name: "New Balance 550", brand: "New Balance", price: 999.90, image: "https://images.unsplash.com/photo-1539185441755-769473a23570?w=600&auto=format&fit=crop" },
+            { id: 5, name: "Nike Air Max 90", brand: "Nike", price: 799.90, image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&auto=format&fit=crop" },
+            { id: 6, name: "Adidas Forum Low", brand: "Adidas", price: 699.90, image: "https://images.unsplash.com/photo-1552346154-21d32810aba3?w=600&auto=format&fit=crop" }
+        ];
 
-        // Renderização dos Produtos
+        let cart = [];
+        let selectedCategory = 'all';
+
         window.renderProducts = function() {
-            const filtered = window.products.filter(p => {
-                const matchesCategory = selectedCategory === 'Todos' || p.category === selectedCategory;
-                const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                                      p.category.toLowerCase().includes(searchQuery.toLowerCase());
-                return matchesCategory && matchesSearch;
+            const grid = document.getElementById('products-grid');
+            const search = document.getElementById('search-input').value.toLowerCase();
+            
+            grid.innerHTML = '';
+
+            const filtered = products.filter(p => {
+                const matchesCat = selectedCategory === 'all' || p.brand === selectedCategory;
+                const matchesSearch = p.name.toLowerCase().includes(search) || p.brand.toLowerCase().includes(search);
+                return matchesCat && matchesSearch;
             });
 
-            if (filtered.length === 0) {
-                productsGrid.classList.add('hidden');
-                emptyState.classList.remove('hidden');
+            if(filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500">Nenhum tênis encontrado.</div>`;
                 return;
             }
 
-            productsGrid.classList.remove('hidden');
-            emptyState.classList.add('hidden');
-
-            productsGrid.innerHTML = filtered.map(product => `
-                <div class="bg-brand-card border border-neutral-800 rounded-2xl overflow-hidden hover:border-neutral-700 transition duration-300 flex flex-col group">
-                    <!-- Caixa da Imagem -->
-                    <div class="relative bg-neutral-900 overflow-hidden h-60 flex items-center justify-center p-4">
-                        <span class="absolute top-3 left-3 bg-neutral-800/90 backdrop-blur-md text-neutral-300 text-xs font-semibold px-2.5 py-1 rounded-md border border-neutral-700">
-                            ${product.category}
-                        </span>
-                        <img src="${product.image}" alt="${product.name}" 
-                             class="w-full h-full object-cover rounded-xl group-hover:scale-105 transition duration-500">
-                    </div>
-
-                    <!-- Detalhes do Produto -->
-                    <div class="p-5 flex flex-col flex-grow justify-between space-y-4">
-                        <div>
-                            <div class="flex items-center justify-between text-xs text-neutral-400 mb-1">
-                                <div class="flex items-center text-amber-400">
-                                    <i data-lucide="star" class="w-3.5 h-3.5 fill-current mr-1"></i>
-                                    <span>${product.rating}</span>
-                                </div>
-                                <span class="text-emerald-400 font-medium">Em Estoque</span>
-                            </div>
-                            <h3 class="font-display font-bold text-lg text-white group-hover:text-brand-red transition line-clamp-1" title="${product.name}">${product.name}</h3>
-                            <div class="text-xl font-bold font-display text-neutral-100 mt-1">${formatMoney(product.price)}</div>
+            filtered.forEach(product => {
+                grid.innerHTML += `
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden hover:border-slate-700 transition duration-300 flex flex-col justify-between group">
+                        <div class="relative overflow-hidden aspect-square bg-slate-950">
+                            <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            <span class="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-md text-slate-300 text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-md border border-slate-800">${product.brand}</span>
                         </div>
+                        <div class="p-5 flex-1 flex flex-col justify-between">
+                            <div>
+                                <h3 class="font-bold text-white text-base mb-1">${product.name}</h3>
+                                <p class="text-orange-500 font-extrabold text-lg mb-4">R$ ${product.price.toFixed(2).replace('.', ',')}</p>
+                            </div>
+                            <button onclick="addToCart(${product.id})" class="w-full bg-slate-800 hover:bg-orange-600 text-slate-200 hover:text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-2 text-xs">
+                                <i data-lucide="plus" class="w-4 h-4"></i> Adicionar ao Carrinho
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            if (window.lucide) lucide.createIcons();
+        };
 
-                        <!-- Seleção de Tamanho (BR/EUR) -->
-                        <div>
-                            <label class="text-xs text-neutral-400 mb-1.5 block">Tamanho (BR):</label>
-                            <div class="flex flex-wrap gap-1.5">
-                                ${(product.sizes || [38, 39, 40, 41]).map(size => `
-                                    <button onclick="selectSize('${product.id}', ${size})" 
-                                            class="size-btn-${product.id} text-xs font-semibold px-2.5 py-1 rounded border ${window.selectedSizes[product.id] === size ? 'border-brand-red text-brand-red bg-brand-red/10' : 'border-neutral-800 text-neutral-400 hover:border-neutral-700'} transition">
-                                        ${size}
-                                    </button>
-                                `).join('')}
+        window.addToCart = function(id) {
+            const product = products.find(p => p.id === id);
+            const item = cart.find(i => i.id === id);
+
+            if (item) {
+                item.qty++;
+            } else {
+                cart.push({ ...product, qty: 1 });
+            }
+            updateCartUI();
+        };
+
+        window.updateCartUI = function() {
+            const count = document.getElementById('cart-count');
+            const itemsContainer = document.getElementById('cart-items');
+            const totalContainer = document.getElementById('cart-total');
+
+            const totalQty = cart.reduce((acc, i) => acc + i.qty, 0);
+            const totalPrice = cart.reduce((acc, i) => acc + (i.price * i.qty), 0);
+
+            count.innerText = totalQty;
+            totalContainer.innerText = `R$ ${totalPrice.toFixed(2).replace('.', ',')}`;
+
+            itemsContainer.innerHTML = '';
+            if (cart.length === 0) {
+                itemsContainer.innerHTML = `<p class="text-center text-slate-500 py-8 text-sm">Seu carrinho está vazio.</p>`;
+                return;
+            }
+
+            cart.forEach(item => {
+                itemsContainer.innerHTML += `
+                    <div class="flex items-center gap-4 bg-slate-950 p-3 rounded-xl border border-slate-800">
+                        <img src="${item.image}" class="w-16 h-16 object-cover rounded-lg">
+                        <div class="flex-1">
+                            <h4 class="text-xs font-bold text-white">${item.name}</h4>
+                            <p class="text-xs text-orange-500 font-bold">R$ ${item.price.toFixed(2).replace('.', ',')}</p>
+                            <div class="flex items-center gap-2 mt-2">
+                                <button onclick="changeQty(${item.id}, -1)" class="w-5 h-5 bg-slate-800 hover:bg-slate-700 text-white rounded flex items-center justify-center text-xs">-</button>
+                                <span class="text-xs text-slate-300 font-bold">${item.qty}</span>
+                                <button onclick="changeQty(${item.id}, 1)" class="w-5 h-5 bg-slate-800 hover:bg-slate-700 text-white rounded flex items-center justify-center text-xs">+</button>
                             </div>
                         </div>
-
-                        <!-- Botão Adicionar ao Carrinho -->
-                        <button onclick="addToCart('${product.id}')" class="w-full bg-neutral-900 hover:bg-brand-red text-white border border-neutral-800 hover:border-brand-red font-semibold py-2.5 rounded-xl transition flex items-center justify-center space-x-2">
-                            <i data-lucide="plus" class="w-4 h-4"></i>
-                            <span>Adicionar ao Carrinho</span>
-                        </button>
                     </div>
-                </div>
-            `).join('');
+                `;
+            });
+            if (window.lucide) lucide.createIcons();
+        };
 
-            if (window.lucide) {
-                lucide.createIcons();
+        window.changeQty = function(id, delta) {
+            const item = cart.find(i => i.id === id);
+            if (item) {
+                item.qty += delta;
+                if (item.qty <= 0) cart = cart.filter(i => i.id !== id);
+            }
+            updateCartUI();
+        };
+
+        window.toggleCart = function() {
+            const sidebar = document.getElementById('cart-sidebar');
+            const overlay = document.getElementById('cart-overlay');
+            sidebar.classList.toggle('translate-x-full');
+            overlay.classList.toggle('hidden');
+        };
+
+        window.filterCategory = function(cat) {
+            selectedCategory = cat;
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                btn.className = "cat-btn bg-slate-900 border border-slate-800 text-slate-400 hover:text-white text-xs font-bold px-4 py-2 rounded-full whitespace-nowrap transition";
+            });
+            event.target.className = "cat-btn active bg-orange-600 text-white text-xs font-bold px-4 py-2 rounded-full whitespace-nowrap transition";
+            renderProducts();
+        };
+
+        window.filterProducts = function() {
+            renderProducts();
+        };
+
+        // Salvar Pedido no Firestore
+        window.checkout = async function() {
+            if (cart.length === 0) return alert("Seu carrinho está vazio!");
+            if (!currentUser) return alert("Por favor, faça login para finalizar a compra.");
+
+            const totalPrice = cart.reduce((acc, i) => acc + (i.price * i.qty), 0);
+
+            try {
+                await addDoc(collection(db, "orders"), {
+                    userId: currentUser.uid,
+                    userEmail: currentUser.email,
+                    items: cart,
+                    total: totalPrice,
+                    createdAt: serverTimestamp()
+                });
+
+                alert("Pedido realizado com sucesso! Registrado no Firebase.");
+                cart = [];
+                updateCartUI();
+                toggleCart();
+            } catch (error) {
+                console.error("Erro ao salvar pedido:", error);
+                alert("Ocorreu um erro ao processar o seu pedido.");
             }
         };
 
-        // Selecionar Tamanho
-        function selectSize(productId, size) {
-            window.selectedSizes[productId] = size;
-            window.renderProducts();
-        }
-
-        // Filtrar Categoria
-        function filterCategory(category) {
-            selectedCategory = category;
-            
-            document.querySelectorAll('.cat-btn').forEach(btn => {
-                if (btn.innerText.trim() === category) {
-                    btn.className = "cat-btn active bg-brand-red text-white px-4 py-2 rounded-lg text-sm font-semibold transition whitespace-nowrap";
-                } else {
-                    btn.className = "cat-btn bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 px-4 py-2 rounded-lg text-sm font-semibold transition whitespace-nowrap";
-                }
-            });
-
-            window.renderProducts();
-        }
-
-        // Pesquisa
-        function handleSearch() {
-            searchQuery = document.getElementById('search-input').value;
-            window.renderProducts();
-        }
-
-        function handleSearchMobile() {
-            searchQuery = document.getElementById('search-input-mobile').value;
-            window.renderProducts();
-        }
-
-        function toggleMobileSearch() {
-            const mobileBar = document.getElementById('mobile-search-bar');
-            mobileBar.classList.toggle('hidden');
-        }
-
-        // Rolar até os produtos
-        function scrollToProducts() {
-            document.getElementById('products-section').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // Gestão do Carrinho
-        function addToCart(productId) {
-            const product = window.products.find(p => String(p.id) === String(productId));
-            if (!product) return;
-
-            const chosenSize = window.selectedSizes[productId] || (product.sizes ? product.sizes[0] : 39);
-            
-            const existingIndex = cart.findIndex(item => String(item.id) === String(productId) && item.size === chosenSize);
-            
-            if (existingIndex > -1) {
-                cart[existingIndex].quantity += 1;
-            } else {
-                cart.push({
-                    ...product,
-                    size: chosenSize,
-                    quantity: 1
-                });
-            }
-
-            updateCartUI();
-            showToast(`${product.name} (Tam: ${chosenSize}) adicionado ao carrinho!`);
-        }
-
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            updateCartUI();
-        }
-
-        function changeQuantity(index, delta) {
-            cart[index].quantity += delta;
-            if (cart[index].quantity <= 0) {
-                cart.splice(index, 1);
-            }
-            updateCartUI();
-        }
-
-        function updateCartUI() {
-            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-            cartBadge.innerText = totalItems;
-            if (totalItems > 0) {
-                cartBadge.classList.remove('opacity-0');
-            } else {
-                cartBadge.classList.add('opacity-0');
-            }
-
-            if (cart.length === 0) {
-                cartItemsContainer.innerHTML = `
-                    <div class="text-center py-12 text-neutral-500 space-y-3">
-                        <i data-lucide="shopping-bag" class="w-12 h-12 mx-auto stroke-1"></i>
-                        <p class="text-sm">Seu carrinho está vazio no momento.</p>
-                    </div>
-                `;
-            } else {
-                cartItemsContainer.innerHTML = cart.map((item, index) => `
-                    <div class="flex items-center space-x-4 bg-neutral-900 p-3 rounded-xl border border-neutral-800">
-                        <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded-lg">
-                        <div class="flex-grow">
-                            <h4 class="font-bold text-sm text-white line-clamp-1">${item.name}</h4>
-                            <div class="text-xs text-neutral-400 mt-0.5">Tamanho: BR ${item.size}</div>
-                            <div class="text-sm font-bold text-brand-red mt-1">${formatMoney(item.price * item.quantity)}</div>
-                        </div>
-                        <div class="flex flex-col items-end space-y-2">
-                            <button onclick="removeFromCart(${index})" class="text-neutral-500 hover:text-red-400 transition">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            </button>
-                            <div class="flex items-center space-x-2 bg-neutral-800 rounded-lg px-2 py-1">
-                                <button onclick="changeQuantity(${index}, -1)" class="text-neutral-400 hover:text-white px-1">-</button>
-                                <span class="text-xs font-bold w-4 text-center">${item.quantity}</span>
-                                <button onclick="changeQuantity(${index}, 1)" class="text-neutral-400 hover:text-white px-1">+</button>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-            }
-
-            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-
-            cartSubtotal.innerText = formatMoney(total);
-            cartTotal.innerText = formatMoney(total);
-
-            if (window.lucide) {
-                lucide.createIcons();
-            }
-        }
-
-        // Abrir/Fechar Carrinho
-        function toggleCart(open) {
-            const drawer = document.getElementById('cart-drawer');
-            const overlay = document.getElementById('cart-overlay');
-            
-            if (open) {
-                overlay.classList.remove('opacity-0', 'pointer-events-none');
-                drawer.classList.remove('translate-x-full');
-            } else {
-                overlay.classList.add('opacity-0', 'pointer-events-none');
-                drawer.classList.add('translate-x-full');
-            }
-        }
-
-        // Mostrar Notificação Toast
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            const toastMsg = document.getElementById('toast-msg');
-            toastMsg.innerText = message;
-            
-            toast.classList.remove('translate-y-20', 'opacity-0');
-            
-            setTimeout(() => {
-                toast.classList.add('translate-y-20', 'opacity-0');
-            }, 2500);
-        }
-
-        // Finalizar Compra (Checkout)
-        async function checkout() {
-            if (cart.length === 0) {
-                showToast("Adicione itens ao carrinho antes de finalizar!");
-                return;
-            }
-            
-            // Gerar código aleatório para o pedido
-            const randomCode = '#KC-' + Math.floor(10000 + Math.random() * 90000);
-            document.getElementById('modal-order-id').innerText = randomCode;
-
-            // Salvar informações do pedido no Firebase
-            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            if (typeof window.saveOrderToFirebase === 'function') {
-                await window.saveOrderToFirebase({
-                    orderId: randomCode,
-                    items: cart,
-                    totalAmount: total
-                });
-            }
-
-            // Esconder o carrinho e exibir modal de confirmação
-            toggleCart(false);
-            
-            const modal = document.getElementById('checkout-modal');
-            const modalCard = document.getElementById('checkout-modal-card');
-            
-            modal.classList.remove('opacity-0', 'pointer-events-none');
-            modalCard.classList.remove('scale-95');
-            modalCard.classList.add('scale-100');
-
-            // Limpar o carrinho
-            cart = [];
-            updateCartUI();
-        }
-
-        function closeCheckoutModal() {
-            const modal = document.getElementById('checkout-modal');
-            const modalCard = document.getElementById('checkout-modal-card');
-            
-            modal.classList.add('opacity-0', 'pointer-events-none');
-            modalCard.classList.remove('scale-100');
-            modalCard.classList.add('scale-95');
-        }
+        renderProducts();
     </script>
 </body>
 </html>

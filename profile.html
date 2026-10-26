@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KICKS // Meu Perfil</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-orange-500 selection:text-white">
+
+    <!-- Navegação -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <a href="loja.html" class="flex items-center gap-2 group">
+                <div class="bg-gradient-to-tr from-orange-600 to-amber-500 p-2 rounded-xl group-hover:scale-105 transition duration-300 shadow-lg shadow-orange-500/20">
+                    <i data-lucide="footprints" class="w-6 h-6 text-white"></i>
+                </div>
+                <span class="text-xl font-extrabold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-slate-400">KICKS</span>
+            </a>
+
+            <a href="loja.html" class="text-xs font-semibold uppercase tracking-wider text-slate-400 hover:text-white transition flex items-center gap-1">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> Ir para a Loja
+            </a>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 py-8 flex-1 w-full space-y-6">
+        
+        <!-- Cartão do Usuário -->
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
+            <div class="flex items-center gap-4">
+                <div class="w-16 h-16 bg-gradient-to-tr from-orange-600 to-amber-500 rounded-2xl flex items-center justify-center text-2xl font-black text-white shadow-lg shadow-orange-500/20" id="avatar-initials">
+                    ?
+                </div>
+                <div>
+                    <h1 class="text-xl font-extrabold text-white" id="user-name">Carregando...</h1>
+                    <p class="text-sm text-slate-400" id="user-email">...</p>
+                </div>
+            </div>
+
+            <button onclick="logout()" class="w-full sm:w-auto bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 font-bold px-4 py-2.5 rounded-xl transition text-xs flex items-center justify-center gap-2">
+                <i data-lucide="log-out" class="w-4 h-4"></i> Sair da Conta
+            </button>
+        </div>
+
+        <!-- Histórico de Pedidos no Firestore -->
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl">
+            <h2 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+                <i data-lucide="package" class="w-5 h-5 text-orange-500"></i> Meus Pedidos
+            </h2>
+
+            <div id="orders-list" class="space-y-4">
+                <p class="text-slate-500 text-sm">Carregando o seu histórico de compras...</p>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="border-t border-slate-900 py-6 text-center text-xs text-slate-600">
+        &copy; 2026 KICKS Store. Todos os direitos reservados.
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDoipkVYlNOArClFhhKyQI02QCYLP4rtWM",
+            authDomain: "kicks-642ac.firebaseapp.com",
+            projectId: "kicks-642ac",
+            storageBucket: "kicks-642ac.firebasestorage.app",
+            messagingSenderId: "48841933752",
+            appId: "1:48841933752:web:457adf9228738b9901054d"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = "index.html";
+            } else {
+                const name = user.displayName || user.email.split('@')[0];
+                document.getElementById('user-name').innerText = name;
+                document.getElementById('user-email').innerText = user.email;
+                document.getElementById('avatar-initials').innerText = name.charAt(0).toUpperCase();
+
+                loadUserOrders(user.uid);
+            }
+        });
+
+        async function loadUserOrders(uid) {
+            const container = document.getElementById('orders-list');
+            try {
+                const q = query(collection(db, "orders"), where("userId", "==", uid));
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    container.innerHTML = `<p class="text-slate-500 text-sm">Você ainda não realizou nenhum pedido.</p>`;
+                    return;
+                }
+
+                container.innerHTML = '';
+                querySnapshot.forEach((doc) => {
+                    const order = doc.data();
+                    const itemsText = order.items.map(i => `${i.qty}x ${i.name}`).join(', ');
+                    
+                    container.innerHTML += `
+                        <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+                            <div>
+                                <span class="text-[10px] font-extrabold uppercase bg-orange-500/10 text-orange-400 px-2.5 py-1 rounded-md border border-orange-500/20">Pedido Confirmado</span>
+                                <p class="text-sm font-bold text-white mt-2">${itemsText}</p>
+                            </div>
+                            <div class="text-left sm:text-right">
+                                <span class="text-xs text-slate-500 block">Total</span>
+                                <span class="text-base font-extrabold text-orange-500">R$ ${order.total.toFixed(2).replace('.', ',')}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (error) {
+                console.error("Erro ao carregar pedidos:", error);
+                container.innerHTML = `<p class="text-red-400 text-sm">Erro ao carregar os seus pedidos.</p>`;
+            }
+        }
+
+        window.logout = async function() {
+            await signOut(auth);
+            window.location.href = "index.html";
+        };
+
+        if (window.lucide) lucide.createIcons();
+    </script>
+</body>
+</html>
