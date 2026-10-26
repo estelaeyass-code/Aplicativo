@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KICKS // Entrar ou Criar Conta</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-orange-500 selection:text-white">
+
+    <!-- Navegação / Cabeçalho -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2 group">
+                <div class="bg-gradient-to-tr from-orange-600 to-amber-500 p-2 rounded-xl group-hover:scale-105 transition duration-300 shadow-lg shadow-orange-500/20">
+                    <i data-lucide="footprints" class="w-6 h-6 text-white"></i>
+                </div>
+                <span class="text-xl font-extrabold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-slate-400">KICKS</span>
+            </a>
+            
+            <a href="index.html" class="text-xs font-semibold uppercase tracking-wider text-slate-400 hover:text-white transition flex items-center gap-1">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> Voltar à Loja
+            </a>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal / Form -->
+    <main class="flex-1 flex items-center justify-center p-4">
+        <div class="w-full max-w-md bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden backdrop-blur-md">
+            
+            <!-- Efeito Visual no Fundo -->
+            <div class="absolute -top-24 -right-24 w-48 h-48 bg-orange-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <!-- Abas (Entrar / Registrar) -->
+            <div class="flex border-b border-slate-800 mb-6">
+                <button id="tab-login" onclick="switchTab('login')" class="flex-1 pb-3 text-center text-sm font-bold border-b-2 border-orange-500 text-orange-500 transition">
+                    Entrar
+                </button>
+                <button id="tab-register" onclick="switchTab('register')" class="flex-1 pb-3 text-center text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition">
+                    Criar Conta
+                </button>
+            </div>
+
+            <!-- Alertas de Erro e Sucesso -->
+            <div id="auth-alert" class="hidden mb-4 p-3.5 rounded-xl text-xs font-semibold flex items-center gap-2"></div>
+
+            <!-- Formulário de LOGIN -->
+            <form id="form-login" onsubmit="handleAuth(event, 'login')" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">E-mail</label>
+                    <div class="relative">
+                        <i data-lucide="mail" class="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5"></i>
+                        <input type="email" id="login-email" required placeholder="seu@email.com" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-orange-500 transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Senha</label>
+                    <div class="relative">
+                        <i data-lucide="lock" class="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5"></i>
+                        <input type="password" id="login-password" required placeholder="••••••••" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-orange-500 transition">
+                    </div>
+                </div>
+
+                <button type="submit" id="btn-login" class="w-full bg-orange-600 hover:bg-orange-500 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-orange-600/20 active:scale-95 flex items-center justify-center gap-2 text-sm mt-2">
+                    <i data-lucide="log-in" class="w-4 h-4"></i> Entrar na Conta
+                </button>
+            </form>
+
+            <!-- Formulário de REGISTO -->
+            <form id="form-register" onsubmit="handleAuth(event, 'register')" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Nome Completo</label>
+                    <div class="relative">
+                        <i data-lucide="user" class="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5"></i>
+                        <input type="text" id="reg-name" required placeholder="Seu Nome" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-orange-500 transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">E-mail</label>
+                    <div class="relative">
+                        <i data-lucide="mail" class="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5"></i>
+                        <input type="email" id="reg-email" required placeholder="seu@email.com" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-orange-500 transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Senha</label>
+                    <div class="relative">
+                        <i data-lucide="lock" class="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5"></i>
+                        <input type="password" id="reg-password" minlength="6" required placeholder="Mínimo 6 caracteres" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-orange-500 transition">
+                    </div>
+                </div>
+
+                <button type="submit" id="btn-register" class="w-full bg-orange-600 hover:bg-orange-500 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-orange-600/20 active:scale-95 flex items-center justify-center gap-2 text-sm mt-2">
+                    <i data-lucide="user-plus" class="w-4 h-4"></i> Criar Minha Conta
+                </button>
+            </form>
+
+        </div>
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="border-t border-slate-900 py-4 text-center text-xs text-slate-600">
+        &copy; 2026 KICKS Store. Todos os direitos reservados.
+    </footer>
+
+    <!-- Lógica de Autenticação Firebase -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword, 
+            createUserWithEmailAndPassword, 
+            updateProfile,
+            onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        // As suas credenciais do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDoipkVYlNOArClFhhKyQI02QCYLP4rtWM",
+            authDomain: "kicks-642ac.firebaseapp.com",
+            projectId: "kicks-642ac",
+            storageBucket: "kicks-642ac.firebasestorage.app",
+            messagingSenderId: "48841933752",
+            appId: "1:48841933752:web:457adf9228738b9901054d"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Se já estiver logado, redireciona diretamente para o perfil
+        onAuthStateChanged(auth, (user) => {
+            if (user && user.email) {
+                window.location.href = "profile.html";
+            }
+        });
+
+        // Alternar entre abas
+        window.switchTab = function(tab) {
+            const formLogin = document.getElementById('form-login');
+            const formRegister = document.getElementById('form-register');
+            const tabLogin = document.getElementById('tab-login');
+            const tabRegister = document.getElementById('tab-register');
+            const alertBox = document.getElementById('auth-alert');
+            
+            alertBox.classList.add('hidden');
+
+            if(tab === 'login') {
+                formLogin.classList.remove('hidden');
+                formRegister.classList.add('hidden');
+                tabLogin.className = "flex-1 pb-3 text-center text-sm font-bold border-b-2 border-orange-500 text-orange-500 transition";
+                tabRegister.className = "flex-1 pb-3 text-center text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition";
+            } else {
+                formLogin.classList.add('hidden');
+                formRegister.classList.remove('hidden');
+                tabRegister.className = "flex-1 pb-3 text-center text-sm font-bold border-b-2 border-orange-500 text-orange-500 transition";
+                tabLogin.className = "flex-1 pb-3 text-center text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition";
+            }
+        };
+
+        // Manipulação do formulário (Login / Registro)
+        window.handleAuth = async function(e, mode) {
+            e.preventDefault();
+            const alertBox = document.getElementById('auth-alert');
+            alertBox.classList.add('hidden');
+
+            try {
+                if (mode === 'login') {
+                    const email = document.getElementById('login-email').value;
+                    const password = document.getElementById('login-password').value;
+                    await signInWithEmailAndPassword(auth, email, password);
+                    showAlert('Login efetuado com sucesso! Redirecionando...', 'success');
+                    setTimeout(() => window.location.href = "profile.html", 1000);
+                } else {
+                    const name = document.getElementById('reg-name').value;
+                    const email = document.getElementById('reg-email').value;
+                    const password = document.getElementById('reg-password').value;
+                    
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    await updateProfile(userCredential.user, { displayName: name });
+                    
+                    showAlert('Conta criada com sucesso! Redirecionando...', 'success');
+                    setTimeout(() => window.location.href = "profile.html", 1000);
+                }
+            } catch (error) {
+                let msg = "Erro ao processar a autenticação.";
+                if (error.code === 'auth/email-already-in-use') msg = "Este e-mail já está registado.";
+                if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') msg = "E-mail ou senha incorretos.";
+                if (error.code === 'auth/weak-password') msg = "A senha deve ter pelo menos 6 caracteres.";
+                showAlert(msg, 'error');
+            }
+        };
+
+        function showAlert(message, type) {
+            const alertBox = document.getElementById('auth-alert');
+            alertBox.classList.remove('hidden', 'bg-red-500/10', 'border-red-500/20', 'text-red-400', 'bg-emerald-500/10', 'border-emerald-500/20', 'text-emerald-400');
+            
+            if (type === 'error') {
+                alertBox.classList.add('bg-red-500/10', 'border', 'border-red-500/20', 'text-red-400');
+            } else {
+                alertBox.classList.add('bg-emerald-500/10', 'border', 'border-emerald-500/20', 'text-emerald-400');
+            }
+            alertBox.innerText = message;
+        }
+
+        // Renderizar Ícones
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>
